@@ -1,5 +1,10 @@
------- Para executar o docker:
-- docker up -d
+------ Para executar o docker primeira vez:
+- docker-compose up -d
+
+------ Apos subir a imagem e o container para executa o docker
+- docker-compose up
+
+
 
 ------ Para usar o MYSQL no terminal:
 - docker exec -it mysql_db bash
