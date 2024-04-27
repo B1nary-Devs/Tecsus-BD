@@ -24,6 +24,7 @@ create table dim_agua_contrato (
     tipo_de_acesso varchar(50), --
     vigencia_inicial_id int, --
     vigencia_final_id int, --
+    ativado BOOLEAN,
     foreign key (vigencia_inicial_id) references dim_tempo(data_id),
 	foreign key (vigencia_final_id) references dim_tempo(data_id)
 );
@@ -52,7 +53,6 @@ create table dim_agua_medidor (
     foreign key (numero_cliente) references dim_agua_cliente(numero_cliente),
     foreign key (numero_contrato) references dim_agua_contrato(numero_contrato)
 );
-
 
 
 -- fato consumo
