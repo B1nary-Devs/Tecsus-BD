@@ -87,3 +87,88 @@ create table fato_agua_consumo (
 	foreign key (numero_cliente) references dim_agua_cliente(numero_cliente),
 	foreign key (numero_medidor) references dim_agua_medidor(numero_medidor),
 	foreign key (numero_contrato) references dim_agua_contrato(numero_contrato));
+
+
+
+-- criação da tabela de dimensão tempo
+create table dimensao_tempo (
+   data_id int primary key,
+    data_full date,
+    dia int,
+    mes int,
+    ano int,
+    trimestre int,
+    semestre int,
+    dia_da_semana varchar(10),
+    mes_nome varchar(15)
+);
+
+-- criação da tabela de dimensão contratos
+create table dim_energia_contrato (
+	numero_contrato varchar(100) primary key,
+    tipo_de_contrato varchar(255),
+    nome_do_contrato varchar(255),
+    fornecedor varchar(255),
+    classe varchar(255),
+    horario_de_ponta varchar(20),
+    demanda_ponta decimal(10,2),
+    demanda_fora_ponta decimal(10,2),
+    tensao_contratada decimal(10,2),
+    vigencia_inicial_id int,
+    vigencia_final_id int,
+    ativado boolean,
+    foreign key (vigencia_inicial_id) references dim_tempo(data_id),
+	foreign key (vigencia_final_id) references dim_tempo(data_id)
+);
+
+-- dimensão cliente
+create table dim_energia_cliente (
+    numero_cliente varchar(100) primary key, --
+    numero_contrato varchar(100), --
+    cnpj varchar(14),
+    tipo_de_consumidor varchar(50), -- 
+    foreign key (numero_contrato) references dim_agua_contrato(numero_contrato)
+);
+
+-- dimensão medidor ok
+create table dim_energia_medidor ( 
+    numero_medidor varchar(100) primary key, -- 
+    numero_da_instalacao int, --
+    numero_contrato varchar(255), --
+	endereco_de_instalacao text, --
+    numero_cliente varchar(100),
+    foreign key (numero_cliente) references dim_agua_cliente(numero_cliente),
+    foreign key (numero_contrato) references dim_agua_contrato(numero_contrato)
+);
+
+
+-- criação da tabela fato fatura de vencimento da conta
+create table fato_energia_consumo (
+    id_fatura int auto_increment primary key,
+    consumo_em_ponta decimal(10, 2),
+    consumo_fora_de_ponta_capacidade decimal(10, 2),
+    consumo_fora_de_ponta_industrial decimal(10, 2),
+	demanda_de_ponta_kw decimal(10, 2),
+    demanda_fora_de_ponta_capacidade decimal(10, 2),
+    demanda_fora_de_ponta_industrial decimal(10, 2),
+    demanda_faturada_custo decimal(10, 2),
+    demanda_faturada_pt_custo decimal(10, 2),
+    demanda_faturada_fp_custo decimal(10, 2),
+    demanda_ultrapassada_kw decimal(10, 2),
+    demanda_ultrapassada_custo decimal(10, 2),
+    total_da_fatura decimal(10, 2),
+    nivel_de_informacoes_da_fatura int,
+    leitura_anterior_id int,
+    leitura_atual_id int,
+    emissao_id int,
+	numero_cliente varchar(100),
+	numero_medidor varchar(100),
+	numero_contrato varchar(100),
+    foreign key (leitura_anterior_id) references dim_tempo(data_id),
+	foreign key (leitura_atual_id) references dim_tempo(data_id),
+	foreign key (emissao_id) references dim_tempo(data_id),
+	foreign key (numero_cliente) references dim_agua_cliente(numero_cliente),
+	foreign key (numero_medidor) references dim_agua_medidor(numero_medidor),
+	foreign key (numero_contrato) references dim_agua_contrato(numero_contrato)
+);
+
