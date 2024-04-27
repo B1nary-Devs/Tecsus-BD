@@ -1,10 +1,13 @@
---Privilegios para acesso no banco de dados
-update mysql.user set host='%' where user='root';
+-- Privilegios para acesso no banco de dados
+CREATE USER 'b1nary'@'%' IDENTIFIED BY 'tecsus';
+GRANT ALL PRIVILEGES ON tecsusDB.* TO 'b1nary'@'%' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 
+-- Modo estrela da conta e contrato agua
+
 -- dimensão tempo
-create table dim_tempo (
-    data_id serial auto_increment primary key,
+CREATE TABLE IF NOT EXISTS dim_tempo (
+    data_id int AUTO_INCREMENT primary key,
     data_full date,
     dia int,
     mes int,
@@ -16,39 +19,38 @@ create table dim_tempo (
 );
 
 -- dimensão contrato
-create table dim_agua_contrato (
-    numero_contrato serial auto_increment primary key, --
-    nome_do_contrato varchar(255), --
-    fornecedor varchar(255), --
-    forma_de_pagamento varchar(50), --
-    tipo_de_acesso varchar(50), --
-    vigencia_inicial_id int, --
-    vigencia_final_id int, --
+CREATE TABLE IF NOT EXISTS dim_agua_contrato (
+    numero_contrato int AUTO_INCREMENT primary key, 
+    nome_do_contrato varchar(255), 
+    fornecedor varchar(255), 
+    forma_de_pagamento varchar(50), 
+    tipo_de_acesso varchar(50), 
+    vigencia_inicial_id int, 
+    vigencia_final_id int, 
     ativado BOOLEAN,
     foreign key (vigencia_inicial_id) references dim_tempo(data_id),
 	foreign key (vigencia_final_id) references dim_tempo(data_id)
 );
 
 -- dimensão cliente
-create table dim_agua_cliente (
-    numero_cliente serial auto_increment primary key, --
-    numero_contrato int, --
-    nome_cliente varchar(255),  --
-    cnpj varchar(14), --
-    tipo_de_consumidor varchar(50), -- 
+CREATE TABLE IF NOT EXISTS dim_agua_cliente (
+    numero_cliente int AUTO_INCREMENT primary key, 
+    numero_contrato int, 
+    nome_cliente varchar(255),  
+    cnpj varchar(14), 
+    tipo_de_consumidor varchar(50),  
     modelo_de_faturamento varchar(255),
     foreign key (numero_contrato) references dim_agua_contrato(numero_contrato)
 );
 
 
-
 -- dimensão medidor
-create table dim_agua_medidor (
-    numero_medidor serial auto_increment primary key, -- 
-    hidrometro varchar(255), --
-    codigo_de_ligacao_rgi varchar(50), --
-    numero_contrato int, --
-	endereco_de_instalacao text, --
+CREATE TABLE IF NOT EXISTS dim_agua_medidor (
+    numero_medidor int AUTO_INCREMENT primary key, 
+    hidrometro varchar(255),
+    codigo_de_ligacao_rgi varchar(50),
+    numero_contrato int,
+	endereco_de_instalacao varchar(255),
     numero_cliente int,
     foreign key (numero_cliente) references dim_agua_cliente(numero_cliente),
     foreign key (numero_contrato) references dim_agua_contrato(numero_contrato)
@@ -56,8 +58,8 @@ create table dim_agua_medidor (
 
 
 -- fato consumo
-create table fato_agua_consumo (
-	fato_agua_id serial auto_increment primary key,
+CREATE TABLE IF NOT EXISTS fato_agua_consumo (
+	fato_agua_id int AUTO_INCREMENT primary key,
 	planta varchar(255),
 	conta_do_mes varchar(255),
 	serie_da_nota_fiscal varchar(50),
@@ -86,13 +88,15 @@ create table fato_agua_consumo (
 	foreign key (leitura_atual_id) references dim_tempo(data_id),
 	foreign key (numero_cliente) references dim_agua_cliente(numero_cliente),
 	foreign key (numero_medidor) references dim_agua_medidor(numero_medidor),
-	foreign key (numero_contrato) references dim_agua_contrato(numero_contrato));
+	foreign key (numero_contrato) references dim_agua_contrato(numero_contrato)
+);
 
 
+-- Modo estrela da conta e contrato energia
 
 -- criação da tabela de dimensão tempo
-create table dimensao_tempo (
-   data_id serial auto_increment primary key,
+CREATE TABLE IF NOT EXISTS dim_energia_tempo (
+    data_id int AUTO_INCREMENT primary key,
 	data_full date,
 	dia int,
 	mes int,
@@ -104,8 +108,8 @@ create table dimensao_tempo (
 );
 
 -- criação da tabela de dimensão contratos
-create table dim_energia_contrato (
-	numero_contrato serial auto_increment primary key,
+CREATE TABLE IF NOT EXISTS dim_energia_contrato (
+	numero_contrato int AUTO_INCREMENT primary key,
     tipo_de_contrato varchar(255),
     nome_do_contrato varchar(255),
     fornecedor varchar(255),
@@ -117,34 +121,34 @@ create table dim_energia_contrato (
     vigencia_inicial_id int,
     vigencia_final_id int,
     ativado boolean,
-    foreign key (vigencia_inicial_id) references dim_tempo(data_id),
-	foreign key (vigencia_final_id) references dim_tempo(data_id)
+    foreign key (vigencia_inicial_id) references dim_energia_tempo(data_id),
+	foreign key (vigencia_final_id) references dim_energia_tempo(data_id)
 );
 
 -- dimensão cliente
-create table dim_energia_cliente (
-    numero_cliente serial auto_increment primary key, --
-    numero_contrato int, --
-    cnpj varchar(14),
-    tipo_de_consumidor varchar(50), -- 
-    foreign key (numero_contrato) references dim_agua_contrato(numero_contrato)
+CREATE TABLE IF NOT EXISTS dim_energia_cliente (
+    numero_cliente int AUTO_INCREMENT primary key, 
+    numero_contrato int, 
+    cnpj varchar(20),
+    tipo_de_consumidor varchar(50),  
+    foreign key (numero_contrato) references dim_energia_contrato(numero_contrato)
 );
 
 -- dimensão medidor ok
-create table dim_energia_medidor ( 
-    numero_medidor serial auto_increment primary key, -- 
-    numero_da_instalacao int, --
-    numero_contrato int, --
-	endereco_de_instalacao text, --
-    numero_cliente int ,
-    foreign key (numero_cliente) references dim_agua_cliente(numero_cliente),
-    foreign key (numero_contrato) references dim_agua_contrato(numero_contrato)
+CREATE TABLE IF NOT EXISTS dim_energia_medidor ( 
+    numero_medidor int AUTO_INCREMENT primary key,  
+    numero_da_instalacao int, 
+    numero_contrato int, 
+	endereco_de_instalacao varchar(255), 
+    numero_cliente int,
+    foreign key (numero_cliente) references dim_energia_cliente(numero_cliente),
+    foreign key (numero_contrato) references dim_energia_contrato(numero_contrato)
 );
 
 
 -- criação da tabela fato fatura de vencimento da conta
-create table fato_energia_consumo (
-    id_fatura serial auto_increment primary key,
+CREATE TABLE IF NOT EXISTS fato_energia_consumo (
+    id_fatura int AUTO_INCREMENT primary key,
     consumo_em_ponta decimal(10, 2),
     consumo_fora_de_ponta_capacidade decimal(10, 2),
     consumo_fora_de_ponta_industrial decimal(10, 2),
@@ -164,10 +168,10 @@ create table fato_energia_consumo (
 	numero_cliente int,
 	numero_medidor int,
 	numero_contrato int,
-    foreign key (leitura_anterior_id) references dim_tempo(data_id),
-	foreign key (leitura_atual_id) references dim_tempo(data_id),
-	foreign key (emissao_id) references dim_tempo(data_id),
-	foreign key (numero_cliente) references dim_agua_cliente(numero_cliente),
-	foreign key (numero_medidor) references dim_agua_medidor(numero_medidor),
-	foreign key (numero_contrato) references dim_agua_contrato(numero_contrato)
+    foreign key (leitura_anterior_id) references dim_energia_tempo(data_id),
+	foreign key (leitura_atual_id) references dim_energia_tempo(data_id),
+	foreign key (emissao_id) references dim_energia_tempo(data_id),
+	foreign key (numero_cliente) references dim_energia_cliente(numero_cliente),
+	foreign key (numero_medidor) references dim_energia_medidor(numero_medidor),
+	foreign key (numero_contrato) references dim_energia_contrato(numero_contrato)
 );

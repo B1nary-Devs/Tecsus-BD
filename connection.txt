@@ -1,19 +1,24 @@
-Para executar o docker:
-- docker up
+------ Para executar o docker primeira vez:
+- docker-compose up -d
 
-Para usar o MYSQL no terminal:
+------ Apos subir a imagem e o container para executa o docker
+- docker-compose up
+
+
+
+------ Para usar o MYSQL no terminal:
 - docker exec -it mysql_db bash
 - mysql -u root -p
     password: tecsus
 
-Dados connection:
-username = 'root'          # seu usuário MySQL
+------ Dados connection:
+username = 'b1nary'          # seu usuário MySQL
 password = 'tecsus'        # sua senha
 host = 'localhost'         # o host do MySQL
 port = '3306'              # a porta padrão do MySQL
 database = 'tecsusDB'      # database utilizada no projeto
 
 
-Apos ser inseridos dados nos arquivos da pasta sql, sera preciso derrubar e subir novamente o docker perdendo os dados ja salvos:
+------ Apos ser inseridos dados nos arquivos da pasta sql, sera preciso derrubar e subir novamente o docker perdendo os dados ja salvos:
 - docker-compose down -v
 - docker-compose up -d
