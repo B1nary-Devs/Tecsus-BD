@@ -1,10 +1,11 @@
---Privilegios para acesso no banco de dados
-update mysql.user set host='%' where user='root';
+-- -- --Privilegios para acesso no banco de dados
+CREATE USER 'b1nary'@'%' IDENTIFIED BY 'tecsus';
+GRANT ALL PRIVILEGES ON tecsusDB.* TO 'b1nary'@'%' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 
 -- dimensão tempo
-create table dim_tempo (
-    data_id int primary key,
+CREATE TABLE IF NOT EXISTS dim_tempo (
+    data_id int AUTO_INCREMENT primary key,
     data_full date,
     dia int,
     mes int,
@@ -16,47 +17,46 @@ create table dim_tempo (
 );
 
 -- dimensão contrato
-create table dim_agua_contrato (
-    numero_contrato varchar(100) primary key, --
-    nome_do_contrato varchar(255), --
-    fornecedor varchar(255), --
-    forma_de_pagamento varchar(50), --
-    tipo_de_acesso varchar(50), --
-    vigencia_inicial_id int, --
-    vigencia_final_id int, --
+CREATE TABLE IF NOT EXISTS dim_agua_contrato (
+    numero_contrato int AUTO_INCREMENT primary key, 
+    nome_do_contrato varchar(255), 
+    fornecedor varchar(255), 
+    forma_de_pagamento varchar(50), 
+    tipo_de_acesso varchar(50), 
+    vigencia_inicial_id int, 
+    vigencia_final_id int, 
     ativado BOOLEAN,
     foreign key (vigencia_inicial_id) references dim_tempo(data_id),
 	foreign key (vigencia_final_id) references dim_tempo(data_id)
 );
 
 -- dimensão cliente
-create table dim_agua_cliente (
-    numero_cliente varchar(100) primary key, --
-    numero_contrato varchar(100), --
-    nome_cliente varchar(255),  --
-    cnpj varchar(14), --
-    tipo_de_consumidor varchar(50), -- 
+CREATE TABLE IF NOT EXISTS dim_agua_cliente (
+    numero_cliente int AUTO_INCREMENT primary key, 
+    numero_contrato int, 
+    nome_cliente varchar(255),  
+    cnpj varchar(14), 
+    tipo_de_consumidor varchar(50),  
     modelo_de_faturamento varchar(255),
     foreign key (numero_contrato) references dim_agua_contrato(numero_contrato)
 );
 
 
-
 -- dimensão medidor
-create table dim_agua_medidor (
-    numero_medidor varchar(100) primary key, -- 
-    hidrometro varchar(255), --
-    codigo_de_ligacao_rgi varchar(50), --
-    numero_contrato varchar(255), --
-	endereco_de_instalacao text, --
-    numero_cliente varchar(100),
+CREATE TABLE IF NOT EXISTS dim_agua_medidor (
+    numero_medidor int AUTO_INCREMENT primary key, 
+    hidrometro varchar(255),
+    codigo_de_ligacao_rgi varchar(50),
+    numero_contrato int,
+	endereco_de_instalacao varchar(255),
+    numero_cliente int,
     foreign key (numero_cliente) references dim_agua_cliente(numero_cliente),
     foreign key (numero_contrato) references dim_agua_contrato(numero_contrato)
 );
 
 
 -- fato consumo
-create table fato_agua_consumo (
+CREATE TABLE IF NOT EXISTS fato_agua_consumo (
 	fato_agua_id int auto_increment primary key,
 	planta varchar(255),
 	conta_do_mes varchar(255),
@@ -73,9 +73,9 @@ create table fato_agua_consumo (
 	multa_ref_vcto float,
 	juros_de_mora_ref_vcto float,
 	atualizacao_monetaria_ref_vcto float,
-	numero_cliente varchar(100),
-	numero_medidor varchar(100),
-	numero_contrato varchar(100),
+	numero_cliente int,
+	numero_medidor int,
+	numero_contrato int,
 	vencimento_id int,
 	emissao_id int,
 	leitura_anterior_id int,
