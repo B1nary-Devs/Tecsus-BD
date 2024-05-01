@@ -1,0 +1,68 @@
+erDiagram
+  dim_agua_cliente ||--o{ fato_agua_consumo : "has"
+  dim_agua_cliente ||--o{ dim_agua_medidor : "has"
+  dim_agua_contrato ||--o{ dim_agua_cliente : "has"
+  dim_agua_contrato ||--o{ dim_agua_medidor : "has"
+  dim_agua_contrato ||--o{ fato_agua_consumo : "has"
+  dim_tempo ||--o{ dim_agua_contrato : "tracks"
+  dim_tempo ||--o{ fato_agua_consumo : "tracks"
+  dim_agua_medidor ||--o{ fato_agua_consumo : "has"
+
+  dim_agua_cliente {
+      int numero_cliente PK
+      varchar(255) nome_cliente
+      varchar(14) cnpj
+      varchar(50) tipo_de_consumidor
+      varchar(255) modelo_de_faturamento
+      int numero_contrato FK
+  }
+
+  dim_agua_contrato {
+      int numero_contrato PK
+      varchar(255) nome_do_contrato
+      varchar(255) fornecedor
+      varchar(50) forma_de_pagamento
+      varchar(50) tipo_de_acesso
+      varchar(30) ativado
+      int vigencia_inicial_id FK
+      int vigencia_final_id FK
+  }
+
+  dim_agua_medidor {
+      int numero_medidor PK
+      varchar(255) hidrometro
+      varchar(50) codigo_de_ligacao_rgi
+      varchar(255) endereco_de_instalacao
+      int numero_cliente FK
+      int numero_contrato FK
+  }
+
+  dim_tempo {
+      int data_id PK
+      date data_full
+      int dia
+      int mes
+      int ano
+      int trimestre
+      int semestre
+      varchar(10) dia_da_semana
+      varchar(15) mes_nome
+  }
+
+  fato_agua_consumo {
+      int fato_agua_id PK
+      float consumo_de_agua_m3
+      float consumo_de_esgoto_m3
+      float valor_agua
+      float valor_esgoto
+      float total_r
+      varchar(21) nivel_de_informacoes_da_fatura
+      int numero_cliente FK
+      int numero_medidor FK
+      int numero_contrato FK
+      int conta_do_mes FK
+      int vencimento_id FK
+      int emissao_id FK
+      int leitura_anterior_id FK
+      int leitura_atual_id FK
+  }
